@@ -8,12 +8,13 @@ public class Neuron {
     public static final byte TYPE_HIDDEN = 1;
     //output neurons have null back_weights
     public static final byte TYPE_OUTPUT = 2;
+    private int neuron_type;
 
     private Weight[] forward_weights = null; //all the weights used in forward prop
     private Weight[] back_weights = null; //all the weights used in back prop
     private double bias;
+    private double value;
 
-    private int neuron_type;
     private int[] location;
     private boolean hasWeights;
 
@@ -25,6 +26,7 @@ public class Neuron {
         }
         location = new int[] {layer, index};
         bias = Math.random() * 8.0 - 4.0;
+        value = Math.random();
         hasWeights = false;
     }
 
@@ -42,7 +44,7 @@ public class Neuron {
             }
 
             for (int i = 0; i < forward_weights.length; i++) {
-                forward_weights[i] = sources[i].getSink(location[1]);
+                forward_weights[i] = sources[i].getBackWeight(location[1]);
             }
         } else if (neuron_type == TYPE_INPUT) {
             setWeights(sources);
@@ -61,17 +63,49 @@ public class Neuron {
         } else if (neuron_type == TYPE_OUTPUT) {
             forward_weights = new Weight[others.length];
             for (int i = 0; i < forward_weights.length; i++) {
-                forward_weights[i] = others[i].getSink(location[1]);
+                forward_weights[i] = others[i].getBackWeight(location[1]);
             }
         }
         hasWeights = true;
     }
 
-    public Weight getSink(int i) {
+    public Weight getBackWeight(int i) {
         return back_weights[i];
+    }
+
+    public void forwardCalc() {
+        double sum = bias;
+        for (Weight w : forward_weights) {
+            sum += w.forwardCalc();
+        }
+        value = sigmoid(sum);
+    }
+
+    public double sigmoid(double x) {
+        return 1.0 / (1 + Math.pow(Math.E, -x));
+    }
+
+    public void setValue(double value) throws IllegalArgumentException{
+        if (neuron_type == TYPE_INPUT) {
+            this.value = value;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public int getType() {
         return neuron_type;
+    }
+
+    public double getBias() {
+        return bias;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public String toString() {
+        return location[0] + "," + location[1] + " | " + value;
     }
 }

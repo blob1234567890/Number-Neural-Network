@@ -8,4 +8,8 @@ public class Weight {
         this.sink = sink;
         this.value = Math.random() * 8.0 - 4.0;
     }
+
+    public double forwardCalc() {
+        return source.getValue() * value;
+    }
 }

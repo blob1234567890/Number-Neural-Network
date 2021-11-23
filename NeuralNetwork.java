@@ -1,7 +1,11 @@
 public class NeuralNetwork {
-    Neuron[][] activations;
+    private Neuron[][] activations;
+
+    private int batch_size;
 
     public NeuralNetwork(int[] layer_sizes) {
+        batch_size = 1;
+
         activations = new Neuron[layer_sizes.length][];
 
         //Initialize the neurons
@@ -36,14 +40,28 @@ public class NeuralNetwork {
         }
     }
 
-    public void train(Reader i_reader, Reader l_reader) {
-
+    public void train(Reader trainI, Reader trainL, Reader testI, Reader testL) {
+        int[][] batch = trainI.read(batch_size);
+        for (int[] image : batch) {
+            forwardProp(image);
+        }
     }
 
-    public void forward_prop() {
+    public void forwardProp(int[] image) {
+        for (int i = 0; i < image.length; i++) {
+            try {
+                activations[0][i].setValue(image[i]);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+        //do the forward calculations of layers 1-output
         for (int layer = 1; layer < activations.length; layer++) {
             for (Neuron n : activations[layer]) {
-
+                n.forwardCalc();
+                if (layer == activations.length - 1) {
+                    System.out.println(n);
+                }
             }
         }
     }
