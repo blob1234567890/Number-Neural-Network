@@ -5,6 +5,8 @@ public class Runner {
         Reader testI_reader = new Reader("./Testing_Data/t10k-images-idx3-ubyte", Reader.TYPE_FILE_IDX_IMAGE);
         Reader testL_reader = new Reader("./Testing_Data/t10k-labels-idx1-ubyte", Reader.TYPE_FILE_IDX_IMAGE);
 
+        System.out.println(trainI_reader.getImageSize());
+
         NeuralNetwork nn = new NeuralNetwork(
             /**
              * We are using the MNIST data base so the range of values
@@ -14,7 +16,6 @@ public class Runner {
              */
             new int[] {trainI_reader.getImageSize(), 16, 16, 10}
         );
-
-        
+        // nn.train(trainI_reader, trainL_reader);
     }
 }

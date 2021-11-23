@@ -39,7 +39,7 @@ public class Reader {
     public int getImageSize() {
         int size = 1;
         for (int i = 1; i < dimensions.length; i++) {
-            size *= i;
+            size *= dimensions[i];
         }
         return size;
     }

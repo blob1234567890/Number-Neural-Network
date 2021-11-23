@@ -9,15 +9,15 @@ public class NeuralNetwork {
         for (int layer = 0; layer < activations.length; layer++) {
             activations[layer] = new Neuron[layer_sizes[layer]];
             //for each neuron in the layer
-            for (int j = 0; j < activations[layer].length; j++) {
+            for (int index = 0; index < activations[layer].length; index++) {
                 if (layer == 0) {
                     //input neurons
-                    activations[layer][j] = new Neuron(Neuron.TYPE_INPUT);
+                    activations[layer][index] = new Neuron(Neuron.TYPE_INPUT, layer, index);
                 } else if (layer == activations.length-1) {
                     //output neurons
-                    activations[layer][j] = new Neuron(Neuron.TYPE_OUTPUT);
+                    activations[layer][index] = new Neuron(Neuron.TYPE_OUTPUT, layer, index);
                 } else {
-                    activations[layer][j] = new Neuron(Neuron.TYPE_HIDDEN);
+                    activations[layer][index] = new Neuron(Neuron.TYPE_HIDDEN, layer, index);
                 }
             }
         }
@@ -34,5 +34,30 @@ public class NeuralNetwork {
                 }
             }
         }
+    }
+
+    public void train(Reader i_reader, Reader l_reader) {
+
+    }
+
+    public void forward_prop() {
+        for (int layer = 1; layer < activations.length; layer++) {
+            for (Neuron n : activations[layer]) {
+
+            }
+        }
+    }
+
+    public String toString() {
+        String s = "";
+
+        for (int layer = 0; layer < activations.length; layer++) {
+            for (int i = 0; i < activations[layer].length; i++) {
+                System.out.print("+ ");
+            }
+            System.out.println();
+            System.out.println();
+        }
+        return s;
     }
 }

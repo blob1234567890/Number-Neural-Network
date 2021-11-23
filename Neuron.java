@@ -14,14 +14,16 @@ public class Neuron {
     private double bias;
 
     private int neuron_type;
+    private int[] location;
     private boolean hasWeights;
 
-    public Neuron(int type) throws IllegalArgumentException{
+    public Neuron(int type, int layer, int index) throws IllegalArgumentException{
         if (type == TYPE_INPUT || type == TYPE_HIDDEN || type == TYPE_OUTPUT) {
             neuron_type = type;
         } else {
             throw new IllegalArgumentException("Neuron type not found");
         }
+        location = new int[] {layer, index};
         bias = Math.random() * 8.0 - 4.0;
         hasWeights = false;
     }
@@ -40,7 +42,7 @@ public class Neuron {
             }
 
             for (int i = 0; i < forward_weights.length; i++) {
-                forward_weights[i] = sources[i].getSink(i);
+                forward_weights[i] = sources[i].getSink(location[1]);
             }
         } else if (neuron_type == TYPE_INPUT) {
             setWeights(sources);
@@ -59,14 +61,14 @@ public class Neuron {
         } else if (neuron_type == TYPE_OUTPUT) {
             forward_weights = new Weight[others.length];
             for (int i = 0; i < forward_weights.length; i++) {
-                forward_weights[i] = others[i].getSink(i);
+                forward_weights[i] = others[i].getSink(location[1]);
             }
         }
         hasWeights = true;
     }
 
     public Weight getSink(int i) {
-        return forward_weights[i];
+        return back_weights[i];
     }
 
     public int getType() {
