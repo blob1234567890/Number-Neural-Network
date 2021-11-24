@@ -104,7 +104,11 @@ public class Reader {
     public int[][] read(int len) {
         // we can basically read the image as a long line of pixels.
         // pixels wrap around to the next line when you reach the end.
-        int numberOfPixels = dimensions[1] * dimensions[2];
+        int numberOfPixels = 1;
+        for (int i = 1; i < dimensions.length; i++) {
+            numberOfPixels *= dimensions[i];
+        }
+        System.out.println("Num pxl = " + numberOfPixels);
 
         // int[] imgPixels = new int[numberOfPixels];
         // BufferedImage image = new BufferedImage(dimensions[2], dimensions[1], BufferedImage.TYPE_INT_ARGB);
@@ -128,11 +132,9 @@ public class Reader {
 
             for (int p = 0; p < numberOfPixels; p++) {
                 try {
-                    //MNIST uses 0 as white -> 255 as black
-                    //I want 255 as white -> 0 as black
-                    int gray = 255 - file.read(); //flip the byte
+                    int gray = file.read();
                     batch[i][p] = gray;
-
+                    // gray = 255 - gray;
                     // imgPixels[p] = 0xFF000000 | (gray<<16) | (gray<<8) | gray;
                 } catch (IOException e) {
                     e.printStackTrace();

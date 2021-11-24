@@ -12,8 +12,10 @@ public class Neuron {
 
     private Weight[] forward_weights = null; //all the weights used in forward prop
     private Weight[] back_weights = null; //all the weights used in back prop
-    private double bias;
+    private double bias, bias_delta;
+    private double unsquished_value;
     private double value;
+    private double error;
 
     private int[] location;
     private boolean hasWeights;
@@ -26,7 +28,10 @@ public class Neuron {
         }
         location = new int[] {layer, index};
         bias = Math.random() * 8.0 - 4.0;
-        value = Math.random();
+        bias_delta = 0;
+        unsquished_value = bias;
+        value = 0;
+        error = 0;
         hasWeights = false;
     }
 
@@ -73,16 +78,52 @@ public class Neuron {
         return back_weights[i];
     }
 
-    public void forwardCalc() {
-        double sum = bias;
+    public void forward() {
+        unsquished_value = bias;
         for (Weight w : forward_weights) {
-            sum += w.forwardCalc();
+            unsquished_value += w.forwardCalc();
         }
-        value = sigmoid(sum);
+        value = sigmoid(unsquished_value);
+    }
+
+    public void error(double[] expected) throws IllegalArgumentException {
+        if (neuron_type == TYPE_OUTPUT) {
+            error = (value - expected[location[1]]) * sigmoidPrime(unsquished_value);
+        } else if (neuron_type == TYPE_HIDDEN) {
+            error = 0;
+            for (Weight w : forward_weights) {
+                error += w.getValue() * w.getSink().getError() * sigmoidPrime(unsquished_value);
+            }
+        } else {
+            throw new IllegalArgumentException("Cannot calculate error of TYPE_INPUT");
+        }
+    }
+
+    public void desiredGradient() throws IllegalArgumentException {
+        if (neuron_type != TYPE_INPUT) {
+            bias_delta += error;
+            for (Weight w : forward_weights) {
+                w.addDelta(w.getSource().getValue() * error);
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public double cost(int[] label) {
+        double cost = 0;
+        for (int i = 0; i < label.length; i++) {
+            cost += Math.pow(label[i] - value, 2);
+        }
+        return cost;
     }
 
     public double sigmoid(double x) {
         return 1.0 / (1 + Math.pow(Math.E, -x));
+    }
+
+    public double sigmoidPrime(double x) {
+        return sigmoid(x)*(1-sigmoid(x));
     }
 
     public void setValue(double value) throws IllegalArgumentException{
@@ -91,6 +132,10 @@ public class Neuron {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    public double getError() {
+        return error;
     }
 
     public int getType() {
